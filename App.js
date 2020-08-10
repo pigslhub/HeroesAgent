@@ -2,18 +2,17 @@ import React from 'react';
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
 import {Provider as PaperProvider} from 'react-native-paper';
-import HomeScreen from './src/screens/HomeScreen';
-
+import Login from './src/screens/Login';
+import Home from './src/screens/Home';
 
 const AppNavigator = createStackNavigator(
   {
-    Home: HomeScreen,
-   
+    Login: Login,
+    Home: Home,
   },
   {
     initialRouteName: 'Home',
     headerMode: false,
-    
   },
 );
 const AppContainer = createAppContainer(AppNavigator);
