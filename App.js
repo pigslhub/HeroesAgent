@@ -23,7 +23,7 @@ const AppNavigator = createStackNavigator(
     ShopsRegistration: ShopsRegistration
   },
   {
-    initialRouteName: 'ShopsRegistration',
+    initialRouteName: 'Login',
     headerMode: false,
   },
 );
