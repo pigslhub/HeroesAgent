@@ -6,7 +6,13 @@ import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 const DefaultNavbar = ({theme}) => {
   const {colors} = theme;
   return (
-    <Appbar style={{backgroundColor: colors.black, justifyContent: 'center'}}>
+    <Appbar
+      style={{
+        backgroundColor: colors.black,
+        justifyContent: 'center',
+        height: 100,
+        paddingTop: 30,
+      }}>
       <Text
         style={{
           color: colors.white,
