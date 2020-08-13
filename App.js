@@ -1,7 +1,7 @@
 import React from 'react';
 import {createAppContainer} from 'react-navigation';
 import {createStackNavigator} from 'react-navigation-stack';
-import {DefaultTheme,Provider as PaperProvider} from 'react-native-paper';
+import {DefaultTheme, Provider as PaperProvider} from 'react-native-paper';
 import Login from './src/screens/Login';
 import Home from './src/screens/Home';
 import Driver from './src/screens/Driver';
@@ -10,6 +10,7 @@ import DriverRegistration from './src/screens/DriverRegistration';
 import DriverLogin from './src/screens/DriverLogin';
 import ShopsLogin from './src/screens/ShopsLogin';
 import ShopsRegistration from './src/screens/ShopsRegistration';
+import {AppProvider} from './src/context/AppContext';
 
 const AppNavigator = createStackNavigator(
   {
@@ -17,13 +18,13 @@ const AppNavigator = createStackNavigator(
     Home: Home,
     Driver: Driver,
     DriverRegistration: DriverRegistration,
-    DriverLogin: DriverLogin, 
+    DriverLogin: DriverLogin,
     Shops: Shops,
     ShopsLogin: ShopsLogin,
-    ShopsRegistration: ShopsRegistration
+    ShopsRegistration: ShopsRegistration,
   },
   {
-    initialRouteName: 'ShopsRegistration',
+    initialRouteName: 'Home',
     headerMode: false,
   },
 );
@@ -35,16 +36,18 @@ const App = () => {
     colors: {
       ...DefaultTheme.colors,
       black: '#1B1B1B',
-      // white: '#FFFFFFFF',
+      white: '#FFFFFFFF',
       background: '#FFFFFFFF',
       primary: '#1B1B1B',
-      secondary:'#FFFFFFFF'
+      secondary: '#FFFFFFFF',
     },
   };
   return (
-    <PaperProvider theme={theme}>
-      <AppContainer />
-    </PaperProvider>
+    <AppProvider>
+      <PaperProvider theme={theme}>
+        <AppContainer />
+      </PaperProvider>
+    </AppProvider>
   );
 };
 export default App;
