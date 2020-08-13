@@ -24,7 +24,7 @@ const AppNavigator = createStackNavigator(
     ShopsRegistration: ShopsRegistration,
   },
   {
-    initialRouteName: 'Home',
+    initialRouteName: 'Login',
     headerMode: false,
   },
 );
