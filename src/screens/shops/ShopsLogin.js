@@ -1,10 +1,11 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -12,44 +13,83 @@ import {
 } from 'react-native-responsive-screen';
 import {withTheme, TextInput, Card, Button} from 'react-native-paper';
 import {withNavigation} from 'react-navigation';
-import NavbarWithBackButton from '../components/navbars/NavbarWithBackButton';
-import AppContext from '../context/AppContext';
+import NavbarWithBackButton from '../../components/navbars/NavbarWithBackButton';
+import AppContext from '../../context/AppContext';
 import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
-import {AlertMsg} from '../helpers/MyAlert';
-import {SelectCustomImage} from '../helpers/ImageSelection';
+import {AlertMsg} from '../../helpers/MyAlert';
+import {SelectCustomImage} from '../../helpers/ImageSelection';
+import RNFetchBlob from 'react-native-fetch-blob';
 
-const DriverLogin = ({navigation, theme}) => {
+const ShopLogin = ({navigation, theme}) => {
   const colors = {theme};
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const {baseUrl} = useContext(AppContext);
-
-  const driverLogin = (em, ps) => {
-    axios
-      .post(`${baseUrl}/api/driver/login`, {
-        email: em,
-        password: ps,
-      })
-      .then(
-        (response) => {
-          console.log(response.data);
-          storeData(em, ps, response.data.access_token);
-        },
-        (error) => {
-          console.log(error);
-        },
-      );
+  const [email, setEmail] = useState('shop4@system.com');
+  const [password, setPassword] = useState('password');
+  const [signinLoading, setSigninLoading] = useState(false);
+  const {
+    baseUrl,
+    storeUserId,
+    storeToken,
+    storePhone,
+    storeUserEmail,
+  } = useContext(AppContext);
+  const storeData = async (
+    userid,
+    asyncEmail,
+    asyncPassword,
+    asyncToken,
+    login,
+    shop_type_id,
+  ) => {
+    try {
+      await AsyncStorage.setItem('suserid', userid);
+      await AsyncStorage.setItem('semail', asyncEmail);
+      await AsyncStorage.setItem('spassword', asyncPassword);
+      await AsyncStorage.setItem('stoken', asyncToken);
+      await AsyncStorage.setItem('slogin', login);
+      await AsyncStorage.setItem('shop_type_id', shop_type_id);
+    } catch (e) {
+      // saving error
+    }
   };
 
-  const storeData = async (emailP, passwordP, token) => {
-    try {
-      await AsyncStorage.setItem('email', emailP);
-      await AsyncStorage.setItem('password', passwordP);
-      await AsyncStorage.setItem('token', token);
-    } catch (e) {
-      console.log(e);
-    }
+  const shopLogin = (em, ps) => {
+    RNFetchBlob.fetch(
+      'POST',
+      `${baseUrl}/api/shop/login`,
+      {
+        Accept: 'Application/json',
+        'Content-Type': 'multipart/form-data',
+      },
+      [
+        {name: 'email', data: em + ''},
+        {name: 'password', data: ps + ''},
+      ],
+    )
+      .then((response) => response.json())
+      .then((response) => {
+        console.log(response);
+        if (response.hasOwnProperty('error')) {
+          setSigninLoading(false);
+          AlertMsg('Oops!', 'You are unauthroized', null);
+        } else {
+          storeData(
+            response.shop.id + '',
+            em,
+            ps,
+            response.access_token,
+            '1',
+            response.shop.shop_type_id,
+          );
+          setSigninLoading(false);
+          navigation.navigate('ShopsDashboard');
+          console.log(response);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setSigninLoading(false);
+      });
   };
 
   return (
@@ -72,13 +112,13 @@ const DriverLogin = ({navigation, theme}) => {
               alignSelf: 'center',
               marginVertical: hp('2'),
             }}>
-            Driver Login
+            Shop Login
           </Text>
           <TextInput
             onChangeText={(text) => {
               setEmail(text);
             }}
-            label="Driver Email"
+            label="shop Email"
             mode="outlined"
             value={email}
             style={styles.textinputStyle}
@@ -95,13 +135,15 @@ const DriverLogin = ({navigation, theme}) => {
           />
           <Button
             mode="contained"
+            loading={signinLoading}
             onPress={() => {
+              setSigninLoading(true);
               if (email == '') {
                 AlertMsg('Important!', 'Email Required', null);
               } else if (password == '') {
                 AlertMsg('Important!', 'Password Required', null);
               } else {
-                driverLogin(email, password);
+                shopLogin(email, password);
               }
             }}
             style={styles.buttonStyle}>
@@ -111,11 +153,11 @@ const DriverLogin = ({navigation, theme}) => {
 
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('DriverRegistration');
+              navigation.navigate('ShopsRegistration');
             }}>
             <Text
               style={{color: colors.black, textAlign: 'center', marginTop: 20}}>
-              Don't have account ? Signup
+              Don't have account ? Signin
             </Text>
           </TouchableOpacity>
         </Card>
@@ -136,4 +178,4 @@ const styles = StyleSheet.create({
     marginVertical: hp('1'),
   },
 });
-export default DriverLogin;
+export default withNavigation(ShopLogin);
