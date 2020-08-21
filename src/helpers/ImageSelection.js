@@ -6,7 +6,8 @@ const options = {
     path: 'images',
   },
 };
-export function SelectCustomImage(stateCallBack) {
+
+export function SelectCustomImage(stateCallBack, stateMessage) {
   let source = '';
   ImagePicker.showImagePicker(options, (response) => {
     // console.log('Response = ', response);
@@ -22,6 +23,7 @@ export function SelectCustomImage(stateCallBack) {
       console.log(`path : ${source}`);
       console.log(response.uri);
       stateCallBack(response.path);
+      stateMessage('Upload Driver Image (Selected)');
       // You can also display the image using data:
       // const source = { uri: 'data:image/jpeg;base64,' + response.data };
     }

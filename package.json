@@ -23,6 +23,7 @@
     "react-native-responsive-screen": "^1.4.1",
     "react-native-safe-area-context": "^3.1.4",
     "react-native-screens": "^2.10.1",
+    "react-native-select-lists": "^1.0.1",
     "react-native-vector-icons": "^7.0.0",
     "react-navigation": "^4.4.0",
     "react-navigation-stack": "^2.8.2"

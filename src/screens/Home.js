@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {
   View,
   Text,
@@ -15,16 +15,51 @@ import {
 import DefaultNavbar from '../components/navbars/DefaultNavbar';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-community/async-storage';
+import AppContext from '../context/AppContext';
 
 const Home = ({theme, navigation}) => {
   const {colors} = theme;
+  const {storeUserId, storeToken, storePhone, storeUserEmail} = useContext(
+    AppContext,
+  );
+  const isDriverEmpExist = async () => {
+    console.log('hello');
+    try {
+      const idAlreadyExist = await AsyncStorage.getItem('duserid');
+      const emailAlreadyExist = await AsyncStorage.getItem('demail');
+      const passwordAlreadyExist = await AsyncStorage.getItem('dpassword');
+      const tokenAlreadyExist = await AsyncStorage.getItem('dtoken');
+      const loginAlreadyExist = await AsyncStorage.getItem('dlogin');
+      const phoneAlreadyExist = await AsyncStorage.getItem('dphone');
+
+      if (loginAlreadyExist !== null) {
+        if (loginAlreadyExist == '1') {
+          console.log('reach');
+          storeUserId(idAlreadyExist);
+          storeToken(tokenAlreadyExist);
+          storePhone(phoneAlreadyExist);
+          storeUserEmail(emailAlreadyExist);
+          navigation.navigate('DriverDashboard');
+        } else {
+          console.log('noreach');
+          navigation.navigate('DriverLogin');
+        }
+        // value previously stored
+      } else {
+        navigation.navigate('DriverLogin');
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
   return (
     <View style={{flex: 1}}>
       <DefaultNavbar />
       <ScrollView showsVerticalScrollIndicator={false}>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('DriverLogin');
+            isDriverEmpExist();
           }}>
           <Card
             style={{
@@ -46,7 +81,7 @@ const Home = ({theme, navigation}) => {
                 alignSelf: 'center',
                 color: colors.black,
               }}>
-              Driver
+              Driver / Employee
             </Text>
           </Card>
         </TouchableOpacity>
